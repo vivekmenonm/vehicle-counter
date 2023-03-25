@@ -1,9 +1,12 @@
+from track import *
+import tempfile
+import cv2
+import torch
 import streamlit as st
 import os
 
 
-def main():
-    st.set_page_config(page_title="Vehicle Counter", layout="wide", page_icon="🧊")
+if __name__ == '__main__':
     st.title('Vehicle Detection and Counting')
     st.markdown('<h3 style="color: red"> with Yolov5 and Deep SORT </h3', unsafe_allow_html=True)
 
@@ -34,9 +37,6 @@ def main():
 
     # setting hyperparameter
     confidence = st.sidebar.slider('Confidence', min_value=0.0, max_value=1.0, value=0.5)
-    line = st.sidebar.number_input('Line position', min_value=0.0, max_value=1.0, value=0.6, step=0.1)
-    st.sidebar.markdown('---')
-
     
     status = st.empty()
     stframe = st.empty()
@@ -69,7 +69,11 @@ def main():
 
 
     track_button = st.sidebar.button('START')
+    if track_button:
+        opt = parse_opt()
+        opt.conf_thres = confidence
+        opt.source = f'videos/{video_file_buffer.name}'
 
-
-if __name__ == "__main__":
-    main()
+        status.markdown('<font size= "4"> **Status:** Running... </font>', unsafe_allow_html=True)
+        with torch.no_grad():
+            detect(opt, stframe, fps_text, assigned_class_id)
