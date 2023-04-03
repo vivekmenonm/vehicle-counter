@@ -1,0 +1,39 @@
+First, make sure you have installed the required libraries such as PyTorch, OpenCV, and torchvision.
+
+Next, clone the YOLOv5 repository from GitHub.
+
+python
+Copy code
+!git clone https://github.com/ultralytics/yolov5.git
+Install the required dependencies by running the following command:
+python
+Copy code
+!pip install -r yolov5/requirements.txt
+Create a folder named "data" in the YOLOv5 directory and then create two subfolders named "images" and "labels". The "images" folder will contain all the images you want to detect objects in, while the "labels" folder will contain the corresponding annotation files for each image.
+
+Create a YAML file named "custom.yaml" in the "data" folder. This file will contain the configuration settings for your custom object detection task.
+
+yaml
+Copy code
+train: ../images/train
+val: ../images/val
+
+nc: 1
+names: ['your_class_name']
+Create a folder named "weights" in the YOLOv5 directory and download the pre-trained weights for YOLOv5:
+python
+Copy code
+!curl -L "https://github.com/ultralytics/yolov5/releases/download/v5.0/yolov5s.pt" -o yolov5s.pt
+Convert your annotations from the YOLO format to the COCO format using the following command:
+python
+Copy code
+!python yolov5/utils/convert.py --source ../labels --output ../labels_coco
+Train the model using the following command:
+python
+Copy code
+!python yolov5/train.py --img 640 --batch 16 --epochs 100 --data ../data/custom.yaml --cfg yolov5s.yaml --weights ../weights/yolov5s.pt
+Once the training is complete, you can use the following command to detect objects in an image:
+python
+Copy code
+!python yolov5/detect.py --source ../images/test.jpg --weights runs/train/exp/weights/best.pt --conf 0.4 --save-txt
+This will save the detected objects in a text file in the same directory as the image file. You can also use the --save-conf option to save the confidence scores for each detection.
